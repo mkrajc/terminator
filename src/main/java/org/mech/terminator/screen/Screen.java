@@ -35,10 +35,10 @@ public class Screen {
 			layoutize = true;
 		}
 
-		root.render(terminal);
+		root.render();
 
 		if (DIALOG != null) {
-			DIALOG.render(terminal);
+//			DIALOG.render(terminal);
 		}
 
 		terminal.flush();

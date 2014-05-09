@@ -19,15 +19,15 @@ public class Test1 {
 		t.setBackgroundColor(Color.yellow);
 //		final Label t2 = new Label("test2");
 //		t2.setBackgroundColor(Color.red);
-		
+//		
 //		final VerticalPanel panel2 = new VerticalPanel();
 //		panel2.setBackgroundColor(Color.CYAN);
 //		panel2.addComponent(t);
 //		panel2.addComponent(t2);
-		
+//		
 //		panel.getDefaultScreen().getRoot().addComponent(panel2);
 		
-		t.setPrefferedSize(Dimension.of(10, 10));
+		t.setPrefferedSize(Dimension.of(1, 0));
 		panel.getDefaultScreen().getRoot().addComponent(t);
 		
 		

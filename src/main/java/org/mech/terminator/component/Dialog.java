@@ -1,6 +1,5 @@
 package org.mech.terminator.component;
 
-import org.mech.terminator.ITerminal;
 import org.mech.terminator.TerminalRectangleWrapper;
 import org.mech.terminator.geometry.Dimension;
 import org.mech.terminator.geometry.Position;
@@ -17,7 +16,7 @@ public class Dialog extends SimplePanel {
 		Screen.setDialog(null);
 	}
 
-	public void setVisible(boolean showOrHide) {
+	public void setVisible(final boolean showOrHide) {
 		if (showOrHide) {
 			show();
 		} else {
@@ -26,14 +25,14 @@ public class Dialog extends SimplePanel {
 	}
 
 	@Override
-	public void render(ITerminal terminal) {
+	public void render() {
 		final Dimension size = getSize();
 		final Dimension termDim = terminal.getSize().toDimension();
 
-		int x = (termDim.width - size.width) / 2;
-		int y = (termDim.height - size.height) / 2;
+		final int x = (termDim.width - size.width) / 2;
+		final int y = (termDim.height - size.height) / 2;
 
-		TerminalRectangleWrapper newTerminal = new TerminalRectangleWrapper(new Rectangle(Position.at(x, y), getSize()), terminal);
+		final TerminalRectangleWrapper newTerminal = new TerminalRectangleWrapper(new Rectangle(Position.at(x, y), getSize()), terminal);
 		onRender(newTerminal);
 
 	}

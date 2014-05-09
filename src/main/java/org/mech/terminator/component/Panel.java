@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import org.mech.terminator.ITerminal;
-import org.mech.terminator.TerminalRectangleWrapper;
 import org.mech.terminator.TerminalWrapper;
 import org.mech.terminator.conf.SystemProperies;
 import org.mech.terminator.geometry.Dimension;
@@ -94,14 +93,9 @@ public abstract class Panel extends Component implements ComponentContainer {
 		for (final Iterator<Component> iterator = components.iterator(); iterator.hasNext();) {
 			final Component cw = iterator.next();
 
-			if (cw.terminal == null) {
-				final ITerminal t = new TerminalRectangleWrapper(cw.rectangle, terminal);
-				cw.terminal = this.debug ? new DebugTerminal(t) : t;
-			}
-
 //			printDebug(cw.terminal);
 
-			cw.render(cw.terminal);
+			cw.render();
 		}
 	}
 

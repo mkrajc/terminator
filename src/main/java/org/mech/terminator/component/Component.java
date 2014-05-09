@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import org.mech.terminator.ITerminal;
+import org.mech.terminator.TerminalRectangleWrapper;
 import org.mech.terminator.geometry.Dimension;
 import org.mech.terminator.geometry.Rectangle;
 import org.mech.terminator.input.InputListener;
@@ -16,6 +17,7 @@ public abstract class Component {
 	private Color backgroundColor;
 
 	private Dimension prefferedSize;
+	private Dimension propagatedSize;
 	private Dimension size = Dimension.of(0, 0);
 	private Component parent;
 
@@ -25,12 +27,22 @@ public abstract class Component {
 	private List<InputListener> inputListeners;
 
 	public void propagateTerminal(final ITerminal terminal) {
+		this.propagatedSize = terminal.getSize().toDimension();
 		this.rectangle = terminal.getSize().toRectangle();
-		this.terminal = terminal;
-		System.out.println(this + " propagate terminal : " + rectangle + ", term=" + terminal);
-		doPropagateTerminal(terminal);
-	}
 
+		if (prefferedSize != null) {
+			setSize(propagatedSize.intersectWith(prefferedSize));
+		} else {
+			setSize(propagatedSize);
+		}
+
+		// TODO alignment of rectangle
+		this.terminal = new TerminalRectangleWrapper(this.size.toRectangle(), terminal);
+
+		System.out.println(this + " propagate terminal : " + rectangle + ", term=" + terminal);
+		doPropagateTerminal(this.terminal);
+	}
+	
 	public void doPropagateTerminal(final ITerminal terminal) {}
 
 	public Dimension getPrefferedSize() {
@@ -88,7 +100,7 @@ public abstract class Component {
 		System.out.println(this + " unfocused");
 	}
 
-	public void render(final ITerminal terminal) {
+	public void render() {
 		if (getBackgroundColor() != null) {
 			terminal.bg(getBackgroundColor());
 		}

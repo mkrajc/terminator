@@ -23,7 +23,7 @@ public class Border extends Component {
 
 	public Border() {}
 
-	public Border(Component component) {
+	public Border(final Component component) {
 		this.component = component;
 	}
 
@@ -31,7 +31,7 @@ public class Border extends Component {
 		return component;
 	}
 
-	public void setComponent(Component component) {
+	public void setComponent(final Component component) {
 		this.component = component;
 	}
 
@@ -54,18 +54,18 @@ public class Border extends Component {
 		componentSize = getSize().addXY(sizex, sizey);
 	}
 
-	public void setBorders(int borders) {
+	public void setBorders(final int borders) {
 		this.borders = borders;
 	}
 
 	@Override
-	public void onRender(ITerminal terminal) {
+	public void onRender(final ITerminal terminal) {
 		terminal.bg(Color.GREEN);
 
-		TerminalRectangleWrapper wrapper = new TerminalRectangleWrapper(getRectangle(), terminal);
+		final TerminalRectangleWrapper wrapper = new TerminalRectangleWrapper(getRectangle(), terminal);
 		wrapper.bg(TerminalAppearance.DEFAULT_BG_COLOR);
 
-		component.render(wrapper);
+//		component.render(wrapper);
 	}
 
 	private Rectangle getRectangle() {
@@ -79,7 +79,7 @@ public class Border extends Component {
 			x++;
 		}
 
-		Rectangle rectangle = new Rectangle(Position.at(x, y), getComponentSize());
+		final Rectangle rectangle = new Rectangle(Position.at(x, y), getComponentSize());
 		return rectangle;
 	}
 
@@ -100,7 +100,7 @@ public class Border extends Component {
 	}
 
 	@Override
-	public void setSize(Dimension size) {
+	public void setSize(final Dimension size) {
 		super.setSize(size);
 		updateComponentSize();
 		component.setSize(getComponentSize());
@@ -114,7 +114,7 @@ public class Border extends Component {
 		return color;
 	}
 
-	public void setColor(Color color) {
+	public void setColor(final Color color) {
 		this.color = color;
 	}
 
