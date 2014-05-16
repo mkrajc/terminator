@@ -1,38 +1,32 @@
 package org.mech.terminator.swing;
 
-import static org.mech.terminator.TerminalAppearance.*;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JPanel;
 import org.mech.terminator.Terminal;
 import org.mech.terminator.TerminalAppearance;
 import org.mech.terminator.TerminalCharacter;
-import org.mech.terminator.component.Component;
-import org.mech.terminator.screen.Screen;
-import org.mech.terminator.screen.ScreenManager;
 
 public class TerminalPanel extends JPanel implements ComponentListener {
 
-	public static final String DEFAULT = "default";
 	private static final long serialVersionUID = 1L;
 
-	private Terminal terminal = Terminal.INSTANCE;
-
-	private ScreenManager screenManager = new ScreenManager();
-
 	public TerminalPanel() {
+		super();
 		// setIgnoreRepaint(true);
 		setFocusTraversalKeysEnabled(false);
 		setFocusable(true);
 
 		addKeyListener(new KeyInputListener(this));
 		addComponentListener(this);
+
 	}
 
 	@Override
@@ -42,59 +36,47 @@ public class TerminalPanel extends JPanel implements ComponentListener {
 		return new Dimension(screenWidth, screenHeight);
 	}
 
-	public Screen getDefaultScreen() {
-		return getScreen(DEFAULT);
-	}
-
-	public Screen getScreen(String screenId) {
-		Screen screen = screenManager.getScreen(screenId);
-		if (screen == null) {
-			screen = screenManager.createScreen(screenId);
-		}
-		return screen;
-	}
-
 	private int getCharWidth() {
-		final FontMetrics fontMetrics = getGraphics().getFontMetrics(DEFAULT_NORMAL_FONT);
+		final FontMetrics fontMetrics = getGraphics().getFontMetrics(TerminalAppearance.DEFAULT_NORMAL_FONT);
 		return fontMetrics.charWidth(' ');
-//				return getCharHeight();
+		//				return getCharHeight();
 	}
 
 	private int getCharHeight() {
-		final FontMetrics fontMetrics = getGraphics().getFontMetrics(DEFAULT_NORMAL_FONT);
+		final FontMetrics fontMetrics = getGraphics().getFontMetrics(TerminalAppearance.DEFAULT_NORMAL_FONT);
 		return fontMetrics.getHeight();
-		
+
 	}
 
 	@Override
-	protected void paintComponent(Graphics g) {
-		screenManager.repaint();
+	protected void paintComponent(final Graphics g) {
+//		screenManager.repaint();
 		super.paintComponent(g);
 		synchronized (this) {
 			final Graphics2D graphics2D = (Graphics2D) g.create();
 
-			graphics2D.setFont(DEFAULT_NORMAL_FONT);
-			graphics2D.setColor(DEFAULT_BG_COLOR);
+			graphics2D.setFont(TerminalAppearance.DEFAULT_NORMAL_FONT);
+			graphics2D.setColor(TerminalAppearance.DEFAULT_BG_COLOR);
 			graphics2D.fillRect(0, 0, getWidth(), getHeight());
 
 			final int charWidth = getCharWidth();
 			final int charHeight = getCharHeight();
 
 			try {
-				final TerminalCharacter[][] data = terminal.retrieveLock();
+				final TerminalCharacter[][] data = getTerminal().retrieveLock();
 				for (int line = 0; line < getLines(); line++) {
 					for (int col = 0; col < getColumns(); col++) {
 						final TerminalCharacter character = data[line][col];
 						boolean needToResetFont = false;
 
-						int charStartX = col * charWidth;
+						final int charStartX = col * charWidth;
 
-						graphics2D.setColor(DEFAULT_FG_COLOR);
+						graphics2D.setColor(TerminalAppearance.DEFAULT_FG_COLOR);
 
 						if (character.getBg() != null) {
 							graphics2D.setColor(character.getBg());
 							graphics2D.fillRect(charStartX, line * charHeight, charWidth, charHeight);
-							graphics2D.setColor(DEFAULT_FG_COLOR);
+							graphics2D.setColor(TerminalAppearance.DEFAULT_FG_COLOR);
 						}
 
 						if (character.getFg() != null) {
@@ -106,8 +88,8 @@ public class TerminalPanel extends JPanel implements ComponentListener {
 							needToResetFont = true;
 						}
 
-						graphics2D.drawString(character.toString(), charStartX, ((line + 1) * charHeight)
-								- getGraphics().getFontMetrics(DEFAULT_NORMAL_FONT).getDescent());
+						graphics2D.drawString(character.toString(), charStartX,
+								((line + 1) * charHeight) - getGraphics().getFontMetrics(TerminalAppearance.DEFAULT_NORMAL_FONT).getDescent());
 
 						if (needToResetFont) {
 							graphics2D.setFont(TerminalAppearance.DEFAULT_NORMAL_FONT);
@@ -118,17 +100,17 @@ public class TerminalPanel extends JPanel implements ComponentListener {
 				}
 				graphics2D.dispose();
 			} finally {
-				terminal.releaseLock();
+				getTerminal().releaseLock();
 			}
 		}
 	}
 
 	public int getLines() {
-		return terminal.getSize().getLines();
+		return getTerminal().getSize().getLines();
 	}
 
 	public int getColumns() {
-		return terminal.getSize().getColumns();
+		return getTerminal().getSize().getColumns();
 	}
 
 	@Override
@@ -137,48 +119,38 @@ public class TerminalPanel extends JPanel implements ComponentListener {
 	}
 
 	public Terminal getTerminal() {
-		return terminal;
+		return Terminal.getInstance();
 	}
 
-	public void setTerminal(Terminal terminal) {
-		this.terminal = terminal;
-	}
+	private static class KeyInputListener extends KeyAdapter implements KeyListener {
+		private final TerminalPanel owner;
 
-	private static class KeyInputListener implements KeyListener {
-		private TerminalPanel owner;
-
-		public KeyInputListener(TerminalPanel terminalPanel) {
+		public KeyInputListener(final TerminalPanel terminalPanel) {
 			this.owner = terminalPanel;
 		}
 
 		@Override
-		public void keyPressed(KeyEvent e) {
-			if (Component.focused != null) {
-				Component.focused.dispatchInput(e);
+		public void keyPressed(final KeyEvent e) {
+				owner.dispatchInput(e);
 				owner.repaint();
-			}
 		}
-
-		@Override
-		public void keyReleased(KeyEvent e) {
-
-		}
-
-		@Override
-		public void keyTyped(KeyEvent e) {}
-
+	}
+	
+	public void dispatchInput(final KeyEvent e) {
+		
 	}
 
 	@Override
-	public void componentHidden(ComponentEvent e) {}
+	public void componentHidden(final ComponentEvent e) {}
+
 
 	@Override
-	public void componentMoved(ComponentEvent e) {}
+	public void componentMoved(final ComponentEvent e) {}
 
 	@Override
-	public void componentResized(ComponentEvent e) {}
+	public void componentResized(final ComponentEvent e) {}
 
 	@Override
-	public void componentShown(ComponentEvent e) {}
+	public void componentShown(final ComponentEvent e) {}
 
 }

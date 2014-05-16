@@ -7,30 +7,53 @@ import java.util.Set;
 public class Rectangle {
 	protected Position corner1, corner2;
 
-	public Rectangle(Position start, Dimension size) {
+	public Rectangle(final Position start, final Dimension size) {
 		this(start, new Position(start.x + size.width - 1, start.y + size.height - 1));
 	}
 
-	public Rectangle(Position corner1, Position corner2) {
+	public Rectangle(final Position corner1, final Position corner2) {
 		normalize(corner1, corner2);
 	}
 
-	protected void normalize(Position corner1, Position corner2) {
+	public boolean isOut(final Position position) {
+		return !isIn(position);
+	}
+
+	public boolean isIn(final Position position) {
+		return corner1.x <= position.x && corner1.y <= position.y && corner2.x >= position.x && corner2.y >= position.y;
+	}
+
+	public Position toRelative(final Position abs) {
+		if (isOut(abs)) {
+			throw new IllegalArgumentException("Absolute point is out of rectangle [p=" + abs + ", rec=" + this + "]");
+		}
+		return abs.sub(corner1);
+	}
+
+	public Position toAbsolute(final Position rel) {
+		if (getSize().isOut(rel)) {
+			throw new IllegalArgumentException("Relative point is out of rectangle [p=" + rel + ", recSize=" + getSize() + "]");
+		}
+
+		return corner1.add(rel);
+	}
+
+	protected void normalize(final Position corner1, final Position corner2) {
 		// on same axe
 		if (corner1.x == corner2.x || corner1.y == corner2.y) {
 			// throw new IllegalArgumentException("Not a rectangle");
 		}
 
 		// reverse order;
-		boolean swapCorners = corner1.x > corner2.x && corner1.y > corner2.y;
+		final boolean swapCorners = corner1.x > corner2.x && corner1.y > corner2.y;
 
 		if (corner1.x > corner2.x && corner1.y < corner2.y) {
 			// transform coordinates
-			int swap = corner1.x;
+			final int swap = corner1.x;
 			corner1.x = corner2.x;
 			corner2.x = swap;
 		} else if (corner1.x < corner2.x && corner1.y > corner2.y) {
-			int swap = corner1.y;
+			final int swap = corner1.y;
 			corner1.y = corner2.y;
 			corner2.y = swap;
 		}
@@ -89,7 +112,7 @@ public class Rectangle {
 	}
 
 	public Collection<Position> getPerimeter() {
-		Set<Position> positions = new HashSet<Position>();
+		final Set<Position> positions = new HashSet<Position>();
 
 		positions.addAll(getLineUp().getPoints());
 		positions.addAll(getLineDown().getPoints());
@@ -100,9 +123,9 @@ public class Rectangle {
 	}
 
 	public Collection<Position> getPoints() {
-		Set<Position> positions = new HashSet<Position>();
-		Position start = getTopLeftPosition();
-		Position end = getBottomRightPosition();
+		final Set<Position> positions = new HashSet<Position>();
+		final Position start = getTopLeftPosition();
+		final Position end = getBottomRightPosition();
 
 		for (int i = start.x; i <= end.x; i++) {
 			for (int j = start.y; j <= end.y; j++) {

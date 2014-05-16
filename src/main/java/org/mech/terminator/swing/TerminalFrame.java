@@ -11,19 +11,21 @@ public class TerminalFrame extends JFrame {
 	public void showWindow() {
 		pack();
 		setVisible(true);
+		
 	}
 
 	public TerminalFrame() {
 		setTerminalPanel(new TerminalPanel());
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		//		setIgnoreRepaint(true);
+		
 	}
 
 	public TerminalPanel getTerminalPanel() {
 		return terminalPanel;
 	}
 
-	public void setTerminalPanel(TerminalPanel terminalPanel) {
+	public void setTerminalPanel(final TerminalPanel terminalPanel) {
 		this.terminalPanel = terminalPanel;
 		setContentPane(terminalPanel);
 	}

@@ -6,27 +6,47 @@ import org.junit.Test;
 public class NestedRectangleTest {
 
 	@Test
-	public void testInnerToOuter() {
-		NestedRectangle nestedRectangle = new NestedRectangle(Position.at(1, 2), Dimension.of(5, 3), Dimension.of(7, 7));
+	public void testCreation() {
+		new NestedRectangle(Position.at(1000, 1000), Dimension.of(3, 3), Dimension.of(5, 5));
+	}
 
-		assertEquals(Position.at(2, 3), nestedRectangle.innerToOuter(Position.at(1, 1)));
-		assertEquals(Position.at(1, 2), nestedRectangle.innerToOuter(Position.at(0, 0)));
-		assertEquals(Position.at(5, 4), nestedRectangle.innerToOuter(Position.at(4, 2)));
-
+	@Test(expected = IllegalArgumentException.class)
+	public void testBadCreation() {
+		new NestedRectangle(Position.at(100, 100), Dimension.of(5, 5), new Rectangle(Position.at(0, 0), Dimension.of(7, 7)));
 	}
 
 	@Test
-	public void testOuterToInner() {
-		NestedRectangle nestedRectangle = new NestedRectangle(Position.at(1, 2), Dimension.of(5, 3), Dimension.of(7, 7));
+	public void testInnerRelToRel() {
+		final NestedRectangle nestedRectangle = new NestedRectangle(Position.at(100, 100), Dimension.of(5, 5), new Rectangle(Position.at(95, 95),
+				Dimension.of(10, 10)));
 
-		assertEquals(Position.at(1, 1), nestedRectangle.outerToInner(Position.at(2, 3)));
-		assertEquals(Position.at(0, 0), nestedRectangle.outerToInner(Position.at(1, 2)));
-		assertEquals(Position.at(5, 3), nestedRectangle.outerToInner(Position.at(6, 5)));
-		assertNull(nestedRectangle.outerToInner(Position.at(1, 1)));
-		assertNull(nestedRectangle.outerToInner(Position.at(1, 0)));
-		assertNull(nestedRectangle.outerToInner(Position.at(0, 0)));
-		assertNull(nestedRectangle.outerToInner(Position.at(6, 6)));
-
+		assertEquals(Position.at(5, 5), nestedRectangle.innerRelToRel(Position.at(0, 0)));
 	}
+	
+	@Test
+	public void testInnerAbsToRel() {
+		final NestedRectangle nestedRectangle = new NestedRectangle(Position.at(100, 100), Dimension.of(5, 5), new Rectangle(Position.at(95, 95),
+				Dimension.of(10, 10)));
+		
 
+		assertEquals(Position.at(2, 2), nestedRectangle.toRelative(Position.at(102, 102)));
+		assertEquals(Position.at(7, 7), nestedRectangle.innerAbsToRel(Position.at(102, 102)));
+	}
+	
+	@Test
+	public void testOuterRelToRel() {
+		final NestedRectangle nestedRectangle = new NestedRectangle(Position.at(100, 100), Dimension.of(5, 5), new Rectangle(Position.at(95, 95),
+				Dimension.of(10, 10)));
+
+		assertEquals(Position.at(0, 0), nestedRectangle.outerRelToRel(Position.at(5, 5)));
+	}
+	
+	@Test
+	public void testOuterAbsToRel() {
+		final NestedRectangle nestedRectangle = new NestedRectangle(Position.at(100, 100), Dimension.of(5, 5), new Rectangle(Position.at(95, 95),
+				Dimension.of(10, 10)));
+
+		assertEquals(Position.at(2, 2), nestedRectangle.outerAbsToRel(Position.at(102, 102)));
+	}
+	
 }

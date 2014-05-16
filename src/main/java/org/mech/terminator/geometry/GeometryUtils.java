@@ -5,46 +5,42 @@ import java.util.List;
 
 public class GeometryUtils {
 
-	public static boolean isPositionInDimension(Position p, Dimension dim) {
-		return !(p.x >= dim.width || p.y >= dim.height) && p.x >= 0 && p.y >= 0;
-	}
-
-	public static int dist(Position a, Position b) {
+	public static int dist(final Position a, final Position b) {
 		return dist(a.x, a.y, b.x, b.y);
 	}
 
-	public static int dist(int ax, int ay, int bx, int by) {
+	public static int dist(final int ax, final int ay, final int bx, final int by) {
 		return Math.max(Math.abs(ax - bx), Math.abs(ay - by));
 	}
 
-	public static float distPyth(Position a, Position b) {
+	public static float distPyth(final Position a, final Position b) {
 		return distPyth(a.x, a.y, b.x, b.y);
 	}
 
-	public static float distPyth(int ax, int ay, int bx, int by) {
+	public static float distPyth(final int ax, final int ay, final int bx, final int by) {
 		return (float) Math.sqrt(Math.pow(Math.abs(ax - bx), 2) + Math.pow(Math.abs(ay - by), 2));
 	}
 
-	public static float distPyth(int dx, int dy) {
+	public static float distPyth(final int dx, final int dy) {
 		return (float) Math.sqrt(Math.pow(Math.abs(dx), 2) + Math.pow(Math.abs(dy), 2));
 	}
 
-	public static boolean isDistanceInCircle(float distance, int radius) {
+	public static boolean isDistanceInCircle(final float distance, final int radius) {
 		return distance < radius + 0.5;
 	}
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		System.out.println(distPyth(0, 0, 4, 4));
 	}
 
-	public static List<Position> bresenhamLine(int x0, int y0, int x1, int y1) {
-		List<Position> line = new ArrayList<Position>();
+	public static List<Position> bresenhamLine(final int x0, final int y0, final int x1, final int y1) {
+		final List<Position> line = new ArrayList<Position>();
 
-		int dx = Math.abs(x1 - x0);
-		int dy = Math.abs(y1 - y0);
+		final int dx = Math.abs(x1 - x0);
+		final int dy = Math.abs(y1 - y0);
 
-		int sx = x0 < x1 ? 1 : -1;
-		int sy = y0 < y1 ? 1 : -1;
+		final int sx = x0 < x1 ? 1 : -1;
+		final int sy = y0 < y1 ? 1 : -1;
 
 		int err = dx - dy;
 		int e2;
@@ -73,7 +69,7 @@ public class GeometryUtils {
 		return line;
 	}
 
-	public static List<Position> bresenhamLine(Position a, Position b) {
+	public static List<Position> bresenhamLine(final Position a, final Position b) {
 		return bresenhamLine(a.x, a.y, b.x, b.y);
 	}
 }

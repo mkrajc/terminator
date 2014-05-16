@@ -7,8 +7,8 @@ public class CircleTest {
 
 	@Test
 	public void testPerimeter() {
-		Circle a = new Circle(Position.at(0, 0), 3);
-		Circle b = new Circle(Position.at(0, 0), 4);
+		final Circle a = new Circle(Position.at(0, 0), 3);
+		final Circle b = new Circle(Position.at(0, 0), 4);
 
 		assertEquals(a.getPerimeter(3).size(), b.getPerimeter(3).size());
 	}
@@ -17,7 +17,7 @@ public class CircleTest {
 	public void testCircle() {
 		Circle a = new Circle(Position.at(0, 0), 0);
 		assertEquals(0, a.getRadius());
-		assertEquals(0, a.getPerimeter().size());
+		assertEquals(1, a.getPerimeter().size());
 
 		a = new Circle(Position.at(0, 0), 1);
 		assertEquals(1, a.getRadius());
