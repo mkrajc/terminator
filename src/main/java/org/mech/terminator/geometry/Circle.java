@@ -6,9 +6,9 @@ import java.util.List;
 public class Circle {
 	private Position center;
 	private int radius;
-	private List<Position> list;
+	protected List<Position> list;
 
-	public Circle(Position center, int radius) {
+	public Circle(final Position center, final int radius) {
 		this.center = center;
 		this.radius = radius;
 
@@ -16,16 +16,16 @@ public class Circle {
 		recount();
 	}
 
-	public List<Position> getPerimeter(int radius) {
-		List<Position> ret = new ArrayList<Position>();
+	public List<Position> getPerimeter(final int radius) {
+		final List<Position> ret = new ArrayList<Position>();
 
 		if (radius == 0) {
 			ret.add(center);
 			return ret;
 		}
 
-		for (Position p : list) {
-			float distPyth = GeometryUtils.distPyth(p, center);
+		for (final Position p : list) {
+			final float distPyth = GeometryUtils.distPyth(p, center);
 			if (!GeometryUtils.isDistanceInCircle(distPyth, radius - 1) && GeometryUtils.isDistanceInCircle(distPyth, radius)) {
 				ret.add(Position.clone(p));
 			}
@@ -37,22 +37,26 @@ public class Circle {
 		return getPerimeter(getRadius());
 	}
 
-	private void recount() {
+	protected void recount() {
 		list.clear();
 
-		int startX = center.x - radius;
-		int startY = center.y - radius;
-		int endX = center.x + radius;
-		int endY = center.y + radius;
+		final int startX = center.x - radius;
+		final int startY = center.y - radius;
+		final int endX = center.x + radius;
+		final int endY = center.y + radius;
 
 		for (int i = startX; i <= endX; i++) {
 			for (int j = startY; j <= endY; j++) {
-				float distPyth = GeometryUtils.distPyth(i, j, center.x, center.y);
-				if (GeometryUtils.isDistanceInCircle(distPyth, radius)) {
+				if (positionBelongInCircle(i, j)) {
 					list.add(Position.at(i, j));
 				}
 			}
 		}
+	}
+
+	protected boolean positionBelongInCircle(final int i, final int j) {
+		final float distPyth = GeometryUtils.distPyth(i, j, center.x, center.y);
+		return GeometryUtils.isDistanceInCircle(distPyth, radius);
 	}
 
 	@Override
@@ -72,23 +76,23 @@ public class Circle {
 		return list;
 	}
 
-	public void setCenter(Position center) {
+	public void setCenter(final Position center) {
 		this.center = center;
 		recount();
 	}
 
-	public void setRadius(int radius) {
+	public void setRadius(final int radius) {
 		this.radius = radius;
 		recount();
 	}
 
-	public static void main(String[] args) {
-		Position at = Position.at(10, 10);
-		Circle a = new Circle(at, 3);
-		Circle b = new Circle(at, 4);
+	public static void main(final String[] args) {
+		final Position at = Position.at(10, 10);
+		final Circle a = new Circle(at, 3);
+		final Circle b = new Circle(at, 4);
 
-		List<Position> aperimeter = a.getPerimeter(3);
-		List<Position> bperimeter = b.getPerimeter(3);
+		final List<Position> aperimeter = a.getPerimeter(3);
+		final List<Position> bperimeter = b.getPerimeter(3);
 
 		System.out.println(aperimeter.size() + " " + bperimeter.size());
 

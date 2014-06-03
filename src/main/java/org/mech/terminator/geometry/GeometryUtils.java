@@ -5,6 +5,71 @@ import java.util.List;
 
 public class GeometryUtils {
 
+	public static Rectangle intersect(final Rectangle r1, final Rectangle r2) {
+		final Rectangle i = tryIntersection(r1, r2);
+		return i == null ? tryIntersection(r2, r1) : i;
+	}
+
+	private static Rectangle tryIntersection(final Rectangle r1, final Rectangle r2) {
+
+		final boolean bl = r2.isIn(r1.getBottomLeftPosition());
+		final boolean br = r2.isIn(r1.getBottomRightPosition());
+		final boolean tl = r2.isIn(r1.getTopLeftPosition());
+		final boolean tr = r2.isIn(r1.getTopRightPosition());
+
+		final boolean hasIntersection = bl || br || tl || tr;
+
+		if (hasIntersection) {
+			// all corners inside
+			if (bl && br && tl && tr) {
+				return new Rectangle(r1.corner1, r1.corner2);
+			}
+
+			if (bl && br) {
+				return new Rectangle(Position.at(r1.getBottomLeftPosition().x, r2.getTopLeftPosition().y), r1.getBottomRightPosition());
+			}
+
+			if (tl && tr) {
+				return new Rectangle(r1.getTopLeftPosition(), Position.at(r1.getTopRightPosition().x, r2.getBottomRightPosition().y));
+			}
+
+			if (tl && bl) {
+				return new Rectangle(r1.getTopLeftPosition(), Position.at(r2.getBottomRightPosition().x, r1.getBottomRightPosition().y));
+			}
+
+			if (tr && br) {
+				return new Rectangle(Position.at(r2.getTopLeftPosition().x, r1.getTopLeftPosition().y), r1.getBottomRightPosition());
+			}
+
+			if (br) {
+				return new Rectangle(r2.getTopLeftPosition(), r1.getBottomRightPosition());
+			}
+
+			if (tl) {
+				return new Rectangle(r1.getTopLeftPosition(), r2.getBottomRightPosition());
+			}
+
+			if (bl) {
+				return new Rectangle(Position.at(r1.getTopLeftPosition().x, r2.getTopLeftPosition().y), Position.at(r2.getBottomRightPosition().x,
+						r1.getBottomRightPosition().y));
+			}
+
+			if (tr) {
+				return new Rectangle(Position.at(r2.getTopLeftPosition().x, r1.getTopLeftPosition().y), Position.at(r1.getBottomRightPosition().x,
+						r2.getBottomRightPosition().y));
+			}
+		} else {
+			if (r1.getTopLeftPosition().x >= r2.getTopLeftPosition().x && r1.getTopLeftPosition().x <= r2.getBottomRightPosition().x
+					&& r2.getTopLeftPosition().y >= r1.getTopLeftPosition().y && r2.getTopLeftPosition().y <= r1.getBottomRightPosition().y) {
+				return new Rectangle(Position.at(r1.getTopLeftPosition().x, r2.getTopLeftPosition().y), Position.at(r1.getBottomRightPosition().x,
+						r2.getBottomRightPosition().y));
+			}
+		}
+
+		return null;
+
+	}
+
 	public static int dist(final Position a, final Position b) {
 		return dist(a.x, a.y, b.x, b.y);
 	}

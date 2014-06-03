@@ -20,19 +20,19 @@ public class Rectangle {
 	}
 
 	public boolean isIn(final Position position) {
-		return corner1.x <= position.x && corner1.y <= position.y && corner2.x >= position.x && corner2.y >= position.y;
+		return position != null && corner1.x <= position.x && corner1.y <= position.y && corner2.x >= position.x && corner2.y >= position.y;
 	}
 
 	public Position toRelative(final Position abs) {
 		if (isOut(abs)) {
-			throw new IllegalArgumentException("Absolute point is out of rectangle [p=" + abs + ", rec=" + this + "]");
+			return null;
 		}
 		return abs.sub(corner1);
 	}
 
 	public Position toAbsolute(final Position rel) {
 		if (getSize().isOut(rel)) {
-			throw new IllegalArgumentException("Relative point is out of rectangle [p=" + rel + ", recSize=" + getSize() + "]");
+			return null;
 		}
 
 		return corner1.add(rel);

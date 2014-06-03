@@ -1,8 +1,10 @@
 package org.mech.terminator.geometry;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class Dimension {
+public class Dimension implements Serializable {
+	private static final long serialVersionUID = 3076178816949442612L;
 	public int width, height;
 
 	public Dimension(final int width, final int height) {
@@ -17,6 +19,10 @@ public class Dimension {
 
 	public static Dimension of(final int width, final int height) {
 		return new Dimension(width, height);
+	}
+	
+	public static Dimension of(final int size) {
+		return new Dimension(size, size);
 	}
 
 	public boolean isOut(final Position position) {

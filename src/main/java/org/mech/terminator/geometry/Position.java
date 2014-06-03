@@ -1,16 +1,18 @@
 package org.mech.terminator.geometry;
 
-public class Position {
+import java.io.Serializable;
+
+public class Position implements Serializable, Comparable<Position> {
 	public int x, y;
 
-	public Position(int x, int y) {
+	public Position(final int x, final int y) {
 		this.x = x;
 		this.y = y;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		Position p = (Position) obj;
+	public boolean equals(final Object obj) {
+		final Position p = (Position) obj;
 		return x == p.x && y == p.y;
 	}
 
@@ -27,54 +29,65 @@ public class Position {
 		return x + "," + y;
 	}
 
-	public static Position at(int x, int y) {
+	public static Position at(final int x, final int y) {
 		return new Position(x, y);
 	}
 
-	public void add_(Position position) {
+	public void add_(final Position position) {
 		this.x += position.x;
 		this.y += position.y;
 	}
 
-	public void add_x(int d) {
+	public void add_x(final int d) {
 		this.x += d;
 	}
 
-	public void add_y(int d) {
+	public void add_y(final int d) {
 		this.y += d;
 	}
 
-	public Position add(Position position) {
+	public Position add(final Position position) {
 		return new Position(x + position.x, y + position.y);
 	}
 
-	public static Position clone(Position r) {
+	public static Position clone(final Position r) {
 		return new Position(r.x, r.y);
 	}
 
-	public static Position valueOf(String string) {
-		String[] split = string.split(",");
+	public static Position valueOf(final String string) {
+		final String[] split = string.split(",");
 		return valueOf(split[0], split[1]);
 	}
 
-	public static Position valueOf(String x, String y) {
-		return new Position(Integer.valueOf(x),Integer.valueOf(y));
+	public static Position valueOf(final String x, final String y) {
+		return new Position(Integer.valueOf(x), Integer.valueOf(y));
 	}
-	
-	public Position addY(int y) {
+
+	public Position addY(final int y) {
 		return add(Position.at(0, y));
 	}
 
-	public Position addX(int x) {
+	public Position addX(final int x) {
 		return add(Position.at(x, 0));
 	}
 
-	public Position addXY(int x, int y) {
+	public Position addXY(final int x, final int y) {
 		return add(Position.at(x, y));
 	}
 
-	public Position sub(Position r) {
+	public Position sub(final Position r) {
 		return addXY(-r.x, -r.y);
+	}
+
+	@Override
+	public int compareTo(final Position p) {
+		if (x < p.x) {
+			return -1;
+		} else if (p.x > p.x) {
+			return 1;
+		} else {
+			return 0;
+		}
 	}
 
 }

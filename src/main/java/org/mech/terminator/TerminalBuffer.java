@@ -7,7 +7,7 @@ public class TerminalBuffer implements ITerminal {
 
 	private static final char DEFAULT_CHAR = ' ';
 
-	private TerminalSize size;
+	private final TerminalSize size;
 	private TerminalCharacter[][] ready, progress;
 	private final Mutex mutex = new Mutex();
 
@@ -20,7 +20,7 @@ public class TerminalBuffer implements ITerminal {
 		init(progress);
 	}
 
-	private void init(TerminalCharacter[][] termData) {
+	private void init(final TerminalCharacter[][] termData) {
 		for (int i = 0; i < size.getLines(); i++) {
 			for (int j = 0; j < size.getColumns(); j++) {
 				termData[i][j] = new TerminalCharacter(DEFAULT_CHAR);
@@ -28,7 +28,7 @@ public class TerminalBuffer implements ITerminal {
 		}
 	}
 
-	private void reset(TerminalCharacter[][] termData) {
+	private void reset(final TerminalCharacter[][] termData) {
 		for (int i = 0; i < size.getLines(); i++) {
 			for (int j = 0; j < size.getColumns(); j++) {
 				termData[i][j].reset(DEFAULT_CHAR);
@@ -66,6 +66,7 @@ public class TerminalBuffer implements ITerminal {
 		}
 	}
 
+	@Override
 	public TerminalSize getSize() {
 		return size;
 	}
@@ -80,8 +81,11 @@ public class TerminalBuffer implements ITerminal {
 	}
 
 	@Override
-	public void put(char c, int line, int column) {
-		progress[line][column].set(c);
+	public void put(final char c, final int line, final int column) {
+		final TerminalCharacter ch = getChar(line, column);
+		if (ch != null) {
+			ch.set(c);
+		}
 	}
 
 	@Override
@@ -90,22 +94,39 @@ public class TerminalBuffer implements ITerminal {
 	}
 
 	@Override
-	public void bg(Color clr, int line, int column) {
-		progress[line][column].bg(clr);
+	public void bg(final Color clr, final int line, final int column) {
+		final TerminalCharacter ch = getChar(line, column);
+		if (ch != null) {
+			ch.bg(clr);
+		}
 	}
 
 	@Override
-	public void fg(Color clr, int line, int column) {
-		progress[line][column].fg(clr);
+	public void fg(final Color clr, final int line, final int column) {
+		final TerminalCharacter ch = getChar(line, column);
+		if (ch != null) {
+			ch.fg(clr);
+		}
 	}
 
 	@Override
-	public void bold(int line, int column) {
-		progress[line][column].bold();
+	public void bold(final int line, final int column) {
+		final TerminalCharacter ch = getChar(line, column);
+		if (ch != null) {
+			ch.bold();
+		}
+	}
+
+	private TerminalCharacter getChar(final int line, final int col) {
+		if (line >= progress.length || col >= progress[0].length) {
+			System.out.println("TODO fix by better thread sync");
+			return null;
+		}
+		return progress[line][col];
 	}
 
 	@Override
-	public void bg(Color clr) {
+	public void bg(final Color clr) {
 		for (int i = 0; i < size.getLines(); i++) {
 			for (int j = 0; j < size.getColumns(); j++) {
 				bg(clr, i, j);
@@ -114,13 +135,22 @@ public class TerminalBuffer implements ITerminal {
 	}
 
 	@Override
-	public void put(char c) {
+	public void put(final char c) {
 		for (int i = 0; i < size.getLines(); i++) {
 			for (int j = 0; j < size.getColumns(); j++) {
 				put(' ', i, j);
 			}
 		}
-
+	}
+	
+	public void initilize(final TerminalBuffer buffer){
+		final int maxLine = Math.min(size.getLines(), buffer.getSize().getLines());
+		final int maxColumn = Math.min(size.getColumns(), buffer.getSize().getColumns());
+		for (int i = 0; i < maxLine; i++) {
+			for (int j = 0; j < maxColumn; j++) {
+				progress[i][j] = buffer.getChar(i, j);
+			}
+		}
 	}
 
 }

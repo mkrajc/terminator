@@ -49,4 +49,13 @@ public class NestedRectangleTest {
 		assertEquals(Position.at(2, 2), nestedRectangle.outerAbsToRel(Position.at(102, 102)));
 	}
 	
+	@Test
+	public void testIntersect() {
+		final NestedRectangle nestedRectangle = new NestedRectangle(Position.at(0, 0), Dimension.of(5, 5), new Rectangle(Position.at(2, 2),
+				Dimension.of(10, 10)));
+
+		assertEquals(Position.at(2, 2), nestedRectangle.innerRelToRel(Position.at(4, 4)));
+		assertEquals(Position.at(2, 2), nestedRectangle.outerRelToRel(Position.at(0, 0)));
+	}
+	
 }

@@ -13,14 +13,16 @@ import javax.swing.JPanel;
 import org.mech.terminator.Terminal;
 import org.mech.terminator.TerminalAppearance;
 import org.mech.terminator.TerminalCharacter;
+import org.mech.terminator.TerminalSize;
 
 public class TerminalPanel extends JPanel implements ComponentListener {
 
 	private static final long serialVersionUID = 1L;
 
+	private boolean squareTerminal = false;
+
 	public TerminalPanel() {
 		super();
-		// setIgnoreRepaint(true);
 		setFocusTraversalKeysEnabled(false);
 		setFocusable(true);
 
@@ -29,17 +31,15 @@ public class TerminalPanel extends JPanel implements ComponentListener {
 
 	}
 
-	@Override
-	public Dimension getPreferredSize() {
-		final int screenWidth = getColumns() * getCharWidth();
-		final int screenHeight = getLines() * getCharHeight();
-		return new Dimension(screenWidth, screenHeight);
-	}
+	//	@Override
+	//	public Dimension getPreferredSize() {
+	//		final int screenWidth = getColumns() * getCharWidth();
+	//		final int screenHeight = getLines() * getCharHeight();
+	//		return new Dimension(screenWidth, screenHeight);
+	//	}
 
 	private int getCharWidth() {
-		final FontMetrics fontMetrics = getGraphics().getFontMetrics(TerminalAppearance.DEFAULT_NORMAL_FONT);
-		return fontMetrics.charWidth(' ');
-		//				return getCharHeight();
+		return squareTerminal ? getCharHeight() : getGraphics().getFontMetrics(TerminalAppearance.DEFAULT_NORMAL_FONT).charWidth(' ');
 	}
 
 	private int getCharHeight() {
@@ -50,7 +50,6 @@ public class TerminalPanel extends JPanel implements ComponentListener {
 
 	@Override
 	protected void paintComponent(final Graphics g) {
-//		screenManager.repaint();
 		super.paintComponent(g);
 		synchronized (this) {
 			final Graphics2D graphics2D = (Graphics2D) g.create();
@@ -88,8 +87,10 @@ public class TerminalPanel extends JPanel implements ComponentListener {
 							needToResetFont = true;
 						}
 
-						graphics2D.drawString(character.toString(), charStartX,
-								((line + 1) * charHeight) - getGraphics().getFontMetrics(TerminalAppearance.DEFAULT_NORMAL_FONT).getDescent());
+						final FontMetrics fontMetrics = getGraphics().getFontMetrics(TerminalAppearance.DEFAULT_NORMAL_FONT);
+						final int startY = ((line + 1) * charHeight) - fontMetrics.getDescent();
+						final int startX = charStartX + ((charWidth - fontMetrics.charWidth(character.get())) / 2);
+						graphics2D.drawString(character.toString(), startX, startY);
 
 						if (needToResetFont) {
 							graphics2D.setFont(TerminalAppearance.DEFAULT_NORMAL_FONT);
@@ -131,26 +132,49 @@ public class TerminalPanel extends JPanel implements ComponentListener {
 
 		@Override
 		public void keyPressed(final KeyEvent e) {
-				owner.dispatchInput(e);
-				owner.repaint();
+			owner.dispatchInput(e);
+			owner.repaint();
 		}
 	}
-	
+
 	public void dispatchInput(final KeyEvent e) {
-		
+
 	}
 
 	@Override
 	public void componentHidden(final ComponentEvent e) {}
 
-
 	@Override
 	public void componentMoved(final ComponentEvent e) {}
 
 	@Override
-	public void componentResized(final ComponentEvent e) {}
+	public void componentResized(final ComponentEvent e) {
+		refreshTerminalSize();
+	}
 
 	@Override
-	public void componentShown(final ComponentEvent e) {}
+	public void componentShown(final ComponentEvent e) {
+		System.out.println("componentShown");
+	}
+
+	public boolean isSquareTerminal() {
+		return squareTerminal;
+	}
+
+	protected void refreshTerminalSize() {
+		getTerminal().flush();
+		getTerminal().releaseLock();
+		
+		final Dimension size = getSize();
+		final int w = (int) (size.getWidth() / getCharWidth());
+		final int h = (int) (size.getHeight() / getCharHeight());
+		final TerminalSize terminalSize = new TerminalSize(h, w);
+		System.out.println("changed terminal to " + terminalSize);
+		getTerminal().setSize(terminalSize);
+	}
+
+	public void setSquareTerminal(final boolean squareTerminal) {
+		this.squareTerminal = squareTerminal;
+	}
 
 }

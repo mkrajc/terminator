@@ -8,7 +8,10 @@ public class NestedRectangle extends Rectangle {
 		super(start, size);
 		this.parentRectangle = parent;
 
-		validate();
+		if (GeometryUtils.intersect(this, parent) == null) {
+			throw new IllegalArgumentException("Rectangles not intersecting");
+		}
+
 	}
 
 	public NestedRectangle(final Position start, final Dimension size, final Dimension parent) {
@@ -18,7 +21,7 @@ public class NestedRectangle extends Rectangle {
 	public Position outerRelToRel(final Position position) {
 		return toRelative(parentRectangle.toAbsolute(position));
 	}
-	
+
 	public Position outerAbsToRel(final Position position) {
 		return toRelative(position);
 	}
@@ -26,24 +29,17 @@ public class NestedRectangle extends Rectangle {
 	public Position innerRelToRel(final Position position) {
 		return innerAbsToRel(toAbsolute(position));
 	}
-	
+
 	public Position innerAbsToRel(final Position position) {
 		return parentRectangle.toRelative(position);
-	}
-
-	private void validate() {
-		validatePosition(getTopLeftPosition());
-		validatePosition(getBottomRightPosition());
-	}
-
-	private void validatePosition(final Position p) {
-		if (parentRectangle.isOut(p)) {
-			throw new IllegalArgumentException("Point of rectangle is out of parent [p=" + p + ", parent=" + parentRectangle + "]");
-		}
 	}
 
 	@Override
 	public String toString() {
 		return super.toString() + " of " + parentRectangle;
+	}
+
+	public Rectangle intersect() {
+		return GeometryUtils.intersect(this, parentRectangle);
 	}
 }
