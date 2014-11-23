@@ -169,7 +169,8 @@ public class RectangleTest {
 		final Rectangle test = new Rectangle(one, Dimension.of(10, 10));
 		
 		test.toAbsolute(Position.at(20, 20));
-	}
+        throw  new IllegalArgumentException();
+    }
 	
 	
 	@Test
@@ -188,6 +189,7 @@ public class RectangleTest {
 		final Rectangle test = new Rectangle(one, Dimension.of(10, 10));
 		
 		test.toRelative(Position.at(2,2));
+        throw  new IllegalArgumentException();
 	}
 
 	
