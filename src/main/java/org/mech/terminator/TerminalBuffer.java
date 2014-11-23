@@ -118,11 +118,11 @@ public class TerminalBuffer implements ITerminal {
 	}
 
 	private TerminalCharacter getChar(final int line, final int col) {
-		if (line >= progress.length || col >= progress[0].length) {
+		if (line >= ready.length || col >= ready[0].length) {
 			System.out.println("TODO fix by better thread sync");
 			return null;
 		}
-		return progress[line][col];
+		return ready[line][col];
 	}
 
 	@Override
@@ -138,7 +138,7 @@ public class TerminalBuffer implements ITerminal {
 	public void put(final char c) {
 		for (int i = 0; i < size.getLines(); i++) {
 			for (int j = 0; j < size.getColumns(); j++) {
-				put(' ', i, j);
+				put(c, i, j);
 			}
 		}
 	}
@@ -148,7 +148,7 @@ public class TerminalBuffer implements ITerminal {
 		final int maxColumn = Math.min(size.getColumns(), buffer.getSize().getColumns());
 		for (int i = 0; i < maxLine; i++) {
 			for (int j = 0; j < maxColumn; j++) {
-				progress[i][j] = buffer.getChar(i, j);
+				ready[i][j] = buffer.getChar(i, j);
 			}
 		}
 	}
