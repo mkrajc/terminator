@@ -1,6 +1,7 @@
 package org.mech.terminator.command;
 
 import org.mech.terminator.Terminal;
+import org.mech.terminator.geometry.Position;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -10,31 +11,59 @@ import java.io.StringReader;
 /**
 * Created by alberto on 23/11/14.
 */
-public class CommandWrapper {
+public class CommandWrapper implements AbstractCommandWrapper {
+    private AbstractPrintLines printOddLines;
+    private AbstractPrintLines printPairLines;
     private String text;
     private Terminal instance;
     private final Color[] colors;
     private int colorIndex;
+    private Position pos;
 
     public CommandWrapper(Terminal instance) {
         this.instance = instance;
         colors = buildColorList();
+        printOddLines = new AbstractPrintLines(this) {
+            @Override
+            protected void changeAppeareance(int lineIndex, int col) {
+                instance.fg(getColor(), lineIndex, col);
+            }
+        };
+
+        printPairLines = new AbstractPrintLines(this) {
+            @Override
+            protected void changeAppeareance(int lineIndex, int col) {
+                instance.bg(getColor(), lineIndex, col);
+            }
+        };
+        colorIndex = 0;
     }
 
+    @Override
+    public void setPosition(Position pos) {
+        this.pos = pos;
+    }
+
+    public Position getPosition() {
+        if (pos == null) {
+            pos = new Position(0,0);
+        }
+        return pos;
+    }
+
+    @Override
     public void flush() throws IOException {
 
         BufferedReader bufferedReader = new BufferedReader(new StringReader(text));
         String line;
         int lineReaded = 0;
-        colorIndex = 0;
-        int lineIndex = 0;
+        int lineIndex = getPosition().y;
         while ((line = bufferedReader.readLine()) != null) {
             if (lineReaded % 2 == 0) {
-                printPairLines(line, lineIndex);
+                printPairLines.printLine(line, lineIndex);
             } else {
-                printOddLines(line, lineIndex);
+                printOddLines.printLine(line, lineIndex);
             }
-            colorIndex++;
             lineIndex++;
             lineIndex++;
 
@@ -42,46 +71,15 @@ public class CommandWrapper {
         }
     }
 
-    private void printOddLines(String line, int lineIndex) {
-        boolean doBold = true;
-        for (int col = 0; col < line.length(); col++) {
-            char c = line.charAt(col);
-            instance.put(c, lineIndex, col);
-            if (c == ' ') {
-                colorIndex++;
-                if (colorIndex == colors.length) {
-                    colorIndex = 0;
-                }
-                doBold=true;
-            } else {
-                instance.fg(colors[colorIndex], lineIndex, col);
-                if (doBold) {
-                    instance.bold(lineIndex, col);
-                    doBold = false;
-                }
-            }
+    public void incColor() {
+        colorIndex++;
+        if (colorIndex == colors.length) {
+            colorIndex = 0;
         }
     }
 
-    private void printPairLines(String line, int lineIndex) {
-        boolean doBold = true;
-        for (int col = 0; col < line.length(); col++) {
-            char c = line.charAt(col);
-            instance.put(c, lineIndex, col);
-            if (c == ' ') {
-                colorIndex++;
-                if (colorIndex == colors.length) {
-                    colorIndex = 0;
-                }
-                doBold=true;
-            } else {
-                instance.bg(colors[colorIndex], lineIndex, col);
-                if (doBold) {
-                    instance.bold(lineIndex, col);
-                    doBold = false;
-                }
-            }
-        }
+    private Color getColor() {
+        return colors[colorIndex];
     }
 
     private Color[] buildColorList() {
@@ -94,5 +92,13 @@ public class CommandWrapper {
 
     public String getText() {
         return text;
+    }
+
+    public Terminal getInstance() {
+        return instance;
+    }
+
+    public void setInstance(Terminal instance) {
+        this.instance = instance;
     }
 }

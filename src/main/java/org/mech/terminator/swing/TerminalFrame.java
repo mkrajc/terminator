@@ -2,6 +2,8 @@ package org.mech.terminator.swing;
 
 import org.mech.terminator.Terminal;
 import org.mech.terminator.command.CommandWrapper;
+import org.mech.terminator.command.NativeWrapper;
+import org.mech.terminator.geometry.Position;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,8 +33,14 @@ public class TerminalFrame extends JFrame {
         terminalFrame.setPreferredSize(new Dimension(400, 200));
         terminalFrame.pack();
         terminalFrame.setVisible(true);
-        CommandWrapper commandWrapper = new CommandWrapper(Terminal.getInstance());
+        Terminal instance = Terminal.getInstance();
+        CommandWrapper commandWrapper = new CommandWrapper(instance);
         commandWrapper.setText("Hello World!\nThis is SwingTerminator");
         commandWrapper.flush();
+        NativeWrapper lsWrapper = new NativeWrapper("ls", instance);
+        Position position = commandWrapper.getPosition();
+        position = position.addY(2);
+        lsWrapper.setPosition(position);
+        lsWrapper.flush();
     }
 }
