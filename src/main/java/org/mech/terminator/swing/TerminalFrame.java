@@ -40,35 +40,48 @@ public class TerminalFrame extends JFrame {
         final Terminal instance = Terminal.getInstance();
         int lineIndex = 0;
         int colorIndex = 0;
-        for (int i = 0; i < test.length(); i++) {
-            char c = test.charAt(i);
-            instance.put(c, lineIndex, i);
+        boolean doBold = true;
+        for (int col = 0; col < test.length(); col++) {
+            char c = test.charAt(col);
+            instance.put(c, lineIndex, col);
             if (c == ' ') {
                 colorIndex++;
                 if (colorIndex == colors.length) {
                     colorIndex = 0;
                 }
+                doBold=true;
             } else {
-                instance.bg(colors[colorIndex], lineIndex, i);
+                instance.bg(colors[colorIndex], lineIndex, col);
+                if (doBold) {
+                    instance.bold(lineIndex, col);
+                    doBold = false;
+                }
             }
         }
         colorIndex++;
         lineIndex++;
         lineIndex++;
+        doBold=true;
 
         test = "This is SwingTerminator";
-        for (int i = 0; i < test.length(); i++) {
-            char c = test.charAt(i);
-            instance.put(c, lineIndex, i);
+        for (int col = 0; col < test.length(); col++) {
+            char c = test.charAt(col);
+            instance.put(c, lineIndex, col);
             if (c == ' ') {
                 colorIndex++;
                 if (colorIndex == colors.length) {
                     colorIndex = 0;
                 }
+                doBold=true;
             } else {
-                instance.fg(colors[colorIndex], lineIndex, i);
+                instance.fg(colors[colorIndex], lineIndex, col);
+                if (doBold) {
+                    instance.bold(lineIndex, col);
+                    doBold = false;
+                }
             }
         }
+        instance.bold(lineIndex, 0);
     }
 
     private static Color[] buildColorList() {
