@@ -23,12 +23,12 @@ public class TerminalPanel extends JPanel implements ComponentListener {
 
 	public TerminalPanel() {
 		super();
-		setFocusTraversalKeysEnabled(false);
-		setFocusable(true);
+        Terminal.setInstance(new Terminal());
+        setFocusTraversalKeysEnabled(false);
+        setFocusable(true);
 
-		addKeyListener(new KeyInputListener(this));
-		addComponentListener(this);
-
+        addKeyListener(new KeyInputListener(this));
+        addComponentListener(this);
 	}
 
 	//	@Override
@@ -162,7 +162,7 @@ public class TerminalPanel extends JPanel implements ComponentListener {
 	}
 
 	protected void refreshTerminalSize() {
-		getTerminal().flush();
+		//getTerminal().flush();
 		getTerminal().releaseLock();
 		
 		final Dimension size = getSize();
