@@ -1,8 +1,8 @@
 package org.mech.terminator.swing;
 
 import org.mech.terminator.Terminal;
-import org.mech.terminator.command.CommandWrapper;
 import org.mech.terminator.command.NativeWrapper;
+import org.mech.terminator.command.PrintLine;
 import org.mech.terminator.geometry.Position;
 
 import javax.swing.*;
@@ -29,18 +29,28 @@ public class TerminalFrame extends JFrame {
 	}
 
     public static void main(String[] args) throws IOException {
-        TerminalFrame terminalFrame = new TerminalFrame();
-        terminalFrame.setPreferredSize(new Dimension(400, 200));
+        final TerminalFrame terminalFrame = new TerminalFrame();
+        terminalFrame.setPreferredSize(new Dimension(800, 600));
         terminalFrame.pack();
         terminalFrame.setVisible(true);
         Terminal instance = Terminal.getInstance();
-        CommandWrapper commandWrapper = new CommandWrapper(instance);
-        commandWrapper.setText("Hello World!\nThis is SwingTerminator");
-        commandWrapper.flush();
-        NativeWrapper lsWrapper = new NativeWrapper("ls", instance);
-        Position position = commandWrapper.getPosition();
+
+        final PrintLine printLine = new PrintLine(instance);
+        printLine.println("Hello World!");
+        printLine.println("This is SwingTerminator This is SwingTerminatorThis is SwingTerminator This is " +
+                "SwingTerminator This is SwingTerminator This is SwingTerminator");
+        printLine.println();
+
+        // windows
+        NativeWrapper lsWrapper = new NativeWrapper("cmd /c dir", instance);
+        // linux
+        // NativeWrapper lsWrapper = new NativeWrapper("ls", instance);
+        Position position = lsWrapper.getPosition();
         position = position.addY(2);
         lsWrapper.setPosition(position);
+
+        terminalFrame.repaint();
+        printLine.flush();
         lsWrapper.flush();
     }
 }

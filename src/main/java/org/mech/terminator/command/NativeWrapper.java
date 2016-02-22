@@ -7,30 +7,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-/**
- * Created by alberto on 23/11/14.
- */
-public class NativeWrapper implements AbstractCommandWrapper {
+public class NativeWrapper extends CommandWrapper {
     private String command;
-    private Terminal terminal;
-    private String result;
-    private Position pos;
 
     public NativeWrapper(String command, Terminal terminal) {
+        super(terminal);
         this.command = command;
-        this.terminal = terminal;
-    }
-
-    @Override
-    public void setPosition(Position pos) {
-        this.pos = pos;
-    }
-
-    public Position getPosition() {
-        if (pos == null) {
-            pos = new Position(0,0);
-        }
-        return pos;
     }
 
     @Override
@@ -38,14 +20,14 @@ public class NativeWrapper implements AbstractCommandWrapper {
         Process p = Runtime.getRuntime().exec(command);
         try {
             p.waitFor();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            final BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), "UTF-8"));
 
-            String line = "";
+            String line;
             int lineIndex = getPosition().y;
             while ((line = reader.readLine()) != null) {
                 for (int col = 0; col < line.length(); col++) {
                     char c = line.charAt(col);
-                    terminal.put(c, lineIndex, col);
+                    getTerminal().put(c, lineIndex, col);
                 }
                 lineIndex++;
             }
