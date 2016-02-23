@@ -6,12 +6,12 @@ import org.mech.terminator.geometry.Position;
 import java.io.IOException;
 
 
-public abstract class CommandWrapper {
+public abstract class Command {
 
     private ITerminal instance;
     private Position pos;
 
-    public CommandWrapper(ITerminal instance) {
+    public Command(ITerminal instance) {
         this.instance = instance;
     }
 
@@ -34,8 +34,6 @@ public abstract class CommandWrapper {
     protected void moveNextColumn(){
         pos.add_x(1);
     }
-
-    public abstract void flush() throws IOException;
 
     public ITerminal getTerminal() {
         return instance;

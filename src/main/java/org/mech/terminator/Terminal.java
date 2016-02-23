@@ -33,7 +33,6 @@ public class Terminal extends TerminalWrapper {
 	}
 
 	public void setSize(final TerminalSize terminalSize) {
-		System.out.println(System.currentTimeMillis() + " terminal change size from " + getSize() + " to " + terminalSize);
 		final TerminalBuffer terminalBuffer = new TerminalBuffer(terminalSize);
 		terminalBuffer.initilize(getBuffer());
 		setTerminal(terminalBuffer);

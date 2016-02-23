@@ -1,15 +1,12 @@
 package org.mech.terminator.swing;
 
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import org.mech.terminator.Terminal;
 import org.mech.terminator.TerminalAppearance;
@@ -36,16 +33,9 @@ public class TerminalPanel extends JPanel implements ComponentListener {
         setFocusTraversalKeysEnabled(false);
         setFocusable(true);
 
-        addKeyListener(new KeyInputListener(this));
+        addKeyListener(new KeyInputListener());
         addComponentListener(this);
     }
-
-    //	@Override
-    //	public Dimension getPreferredSize() {
-    //		final int screenWidth = getColumns() * getCharWidth();
-    //		final int screenHeight = getLines() * getCharHeight();
-    //		return new Dimension(screenWidth, screenHeight);
-    //	}
 
     private int getCharWidth() {
         return squareTerminal ? getCharHeight() : getGraphics().getFontMetrics(TerminalAppearance.DEFAULT_NORMAL_FONT).charWidth(' ');
@@ -132,23 +122,16 @@ public class TerminalPanel extends JPanel implements ComponentListener {
         return Terminal.getInstance();
     }
 
-    private static class KeyInputListener extends KeyAdapter implements KeyListener {
-        private final TerminalPanel owner;
-
-        public KeyInputListener(final TerminalPanel terminalPanel) {
-            this.owner = terminalPanel;
-        }
+    private class KeyInputListener extends KeyAdapter implements KeyListener {
 
         @Override
         public void keyPressed(final KeyEvent e) {
-            owner.dispatchInput(e);
-            owner.repaint();
+            TerminalPanel.this.dispatchInput(e);
+            TerminalPanel.this.repaint();
         }
     }
 
-    private void dispatchInput(final KeyEvent e) {
-
-    }
+    protected void dispatchInput(final KeyEvent e) { }
 
     @Override
     public void componentHidden(final ComponentEvent e) {
@@ -173,14 +156,12 @@ public class TerminalPanel extends JPanel implements ComponentListener {
     }
 
     protected void refreshTerminalSize() {
-        //getTerminal().flush();
         getTerminal().releaseLock();
 
         final Dimension size = getSize();
         final int w = (int) (size.getWidth() / getCharWidth());
         final int h = (int) (size.getHeight() / getCharHeight());
         final TerminalSize terminalSize = new TerminalSize(h, w);
-        System.out.println("changed terminal to " + terminalSize);
         getTerminal().setSize(terminalSize);
     }
 

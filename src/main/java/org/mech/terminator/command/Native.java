@@ -8,16 +8,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
-public class NativeWrapper extends CommandWrapper {
-    private String command;
+public class Native extends Command {
 
-    public NativeWrapper(String command, Terminal terminal) {
+    public Native(Terminal terminal) {
         super(terminal);
-        this.command = command;
     }
 
-    @Override
-    public void flush() throws IOException {
+    public void execute(final String command) throws IOException {
         Process p = Runtime.getRuntime().exec(command);
         try {
             p.waitFor();
@@ -28,12 +25,8 @@ public class NativeWrapper extends CommandWrapper {
             while ((line = reader.readLine()) != null) {
                 for (int col = 0; col < line.length(); col++) {
                     char c = line.charAt(col);
-
-                    System.out.println((int) c + " " + c);
-
                     getTerminal().put(c, getPosition().y, getPosition().x);
                     moveNextColumn();
-
                 }
                 moveNextLine();
             }
