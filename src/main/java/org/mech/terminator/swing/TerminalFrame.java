@@ -1,25 +1,26 @@
 package org.mech.terminator.swing;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 public class TerminalFrame extends JFrame {
-	private static final long serialVersionUID = -4607047642126274067L;
+    private static final long serialVersionUID = -4607047642126274067L;
 
-	private TerminalPanel terminalPanel;
+    private TerminalPanel terminalPanel;
 
-	public TerminalFrame() {
+    public TerminalFrame() {
 
-		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-	}
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
 
-	public TerminalPanel getTerminalPanel() {
-		return terminalPanel;
-	}
+    public TerminalPanel getTerminalPanel() {
+        return terminalPanel;
+    }
 
-	public void setTerminalPanel(final TerminalPanel terminalPanel) {
-		this.terminalPanel = terminalPanel;
-		setContentPane(terminalPanel);
-	}
+    public void setTerminalPanel(final TerminalPanel terminalPanel) {
+        this.terminalPanel = terminalPanel;
+        setContentPane(terminalPanel);
+    }
 
 
 }

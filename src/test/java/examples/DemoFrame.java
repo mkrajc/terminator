@@ -1,7 +1,8 @@
 package examples;
 
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class DemoFrame {
         final TerminalFrame terminalFrame = new TerminalFrame();
         terminalFrame.setTitle("Terminator");
         terminalFrame.setTerminalPanel(new TerminalPanel(new TerminalSize(40, 150)));
-        terminalFrame.setPreferredSize(new Dimension(800, 600));
+        terminalFrame.setPreferredSize(new Dimension(400, 300));
         terminalFrame.pack();
         terminalFrame.setVisible(true);
 
@@ -26,10 +27,22 @@ public class DemoFrame {
 
         final Print printLine = new Print(instance);
         printLine.bold();
-        printLine.setColor(Color.RED);
+        printLine.color(Color.RED);
         printLine.println("This is SwingTerminator");
+        printLine.println();
         printLine.normal();
         printLine.defaultColor();
+
+        printLine.background(Color.GREEN);
+        printLine.print("It ");
+        printLine.background(Color.BLUE);
+        printLine.color(Color.YELLOW);
+        printLine.print("supports");
+        printLine.background(Color.CYAN);
+        printLine.defaultColor();
+        printLine.println(" bold,fg,bg");
+        printLine.defaultBackground();
+
 
         final Native cmd = new Native(instance);
         cmd.setPosition(printLine.getPosition().addY(1));

@@ -1,7 +1,7 @@
 package org.mech.terminator.command;
 
 
-import java.awt.*;
+import java.awt.Color;
 
 import org.mech.terminator.ITerminal;
 
@@ -10,6 +10,7 @@ public class Print extends Command {
     private StringBuilder sb = new StringBuilder();
     private boolean bold;
     private Color color;
+    private Color bgColor;
 
     public Print(ITerminal instance) {
         super(instance);
@@ -44,6 +45,9 @@ public class Print extends Command {
                 if (color != null) {
                     getTerminal().fg(color, lineIndex, getPosition().x);
                 }
+                if (bgColor != null) {
+                    getTerminal().bg(bgColor, lineIndex, getPosition().x);
+                }
                 moveNextColumn();
             }
         }
@@ -58,12 +62,20 @@ public class Print extends Command {
         this.bold = false;
     }
 
-    public void setColor(Color color) {
+    public void color(Color color) {
         this.color = color;
+    }
+
+    public void background(Color color) {
+        this.bgColor = color;
     }
 
     public void defaultColor() {
         this.color = null;
+    }
+
+    public void defaultBackground() {
+        this.bgColor = null;
     }
 
 }

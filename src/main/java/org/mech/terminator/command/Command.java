@@ -3,8 +3,6 @@ package org.mech.terminator.command;
 import org.mech.terminator.ITerminal;
 import org.mech.terminator.geometry.Position;
 
-import java.io.IOException;
-
 
 public abstract class Command {
 
@@ -26,12 +24,12 @@ public abstract class Command {
         return pos;
     }
 
-    protected void moveNextLine(){
+    protected void moveNextLine() {
         pos.add_y(1);
         pos.x = 0;
     }
 
-    protected void moveNextColumn(){
+    protected void moveNextColumn() {
         pos.add_x(1);
     }
 

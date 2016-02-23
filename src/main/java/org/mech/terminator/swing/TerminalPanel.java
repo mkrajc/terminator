@@ -1,12 +1,15 @@
 package org.mech.terminator.swing;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import javax.swing.*;
+import javax.swing.JPanel;
 
 import org.mech.terminator.Terminal;
 import org.mech.terminator.TerminalAppearance;
@@ -131,7 +134,8 @@ public class TerminalPanel extends JPanel implements ComponentListener {
         }
     }
 
-    protected void dispatchInput(final KeyEvent e) { }
+    protected void dispatchInput(final KeyEvent e) {
+    }
 
     @Override
     public void componentHidden(final ComponentEvent e) {
