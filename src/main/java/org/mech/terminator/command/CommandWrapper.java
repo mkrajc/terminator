@@ -26,6 +26,15 @@ public abstract class CommandWrapper {
         return pos;
     }
 
+    protected void moveNextLine(){
+        pos.add_y(1);
+        pos.x = 0;
+    }
+
+    protected void moveNextColumn(){
+        pos.add_x(1);
+    }
+
     public abstract void flush() throws IOException;
 
     public ITerminal getTerminal() {

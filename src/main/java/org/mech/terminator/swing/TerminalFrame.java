@@ -1,12 +1,16 @@
 package org.mech.terminator.swing;
 
 import org.mech.terminator.Terminal;
+import org.mech.terminator.TerminalSize;
 import org.mech.terminator.command.NativeWrapper;
 import org.mech.terminator.command.PrintLine;
 import org.mech.terminator.geometry.Position;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.CharArrayReader;
 import java.io.IOException;
 
 public class TerminalFrame extends JFrame {
@@ -15,7 +19,7 @@ public class TerminalFrame extends JFrame {
 	private TerminalPanel terminalPanel;
 
 	public TerminalFrame() {
-		setTerminalPanel(new TerminalPanel());
+
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	}
 
@@ -30,6 +34,7 @@ public class TerminalFrame extends JFrame {
 
     public static void main(String[] args) throws IOException {
         final TerminalFrame terminalFrame = new TerminalFrame();
+        terminalFrame.setTerminalPanel(new TerminalPanel(new TerminalSize(40,150)));
         terminalFrame.setPreferredSize(new Dimension(800, 600));
         terminalFrame.pack();
         terminalFrame.setVisible(true);
@@ -37,20 +42,42 @@ public class TerminalFrame extends JFrame {
 
         final PrintLine printLine = new PrintLine(instance);
         printLine.println("Hello World!");
-        printLine.println("This is SwingTerminator This is SwingTerminatorThis is SwingTerminator This is " +
-                "SwingTerminator This is SwingTerminator This is SwingTerminator");
+        String line = "This is SwingTerminator This is SwingTerminatorThis is SwingTerminator This is " +
+                "SwingTerminator This is SwingTerminator This is SwingTerminator";
+        printLine.println(line);
+        printLine.println("line length: " + line.length());
+        printLine.flush();
         printLine.println();
+        printLine.flush();
 
         // windows
-        NativeWrapper lsWrapper = new NativeWrapper("cmd /c dir", instance);
+        final NativeWrapper lsWrapper = new NativeWrapper("cmd /c dir", instance);
         // linux
         // NativeWrapper lsWrapper = new NativeWrapper("ls", instance);
-        Position position = lsWrapper.getPosition();
-        position = position.addY(2);
+        Position position = printLine.getPosition().addY(1);
         lsWrapper.setPosition(position);
-
-        terminalFrame.repaint();
-        printLine.flush();
         lsWrapper.flush();
+
+        printLine.setPosition(lsWrapper.getPosition().addY(1));
+        printLine.print("TYPE HERE> ");
+        printLine.flush();
+
+        KeyAdapter keyAdapter =  new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if(!Character.isLetterOrDigit(e.getKeyChar()) && !Character.isWhitespace(e.getKeyChar())){
+                    return;
+                }
+
+                printLine.print(Character.toString(e.getKeyChar()));
+                try {
+                    printLine.flush();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+        };
+        terminalFrame.getTerminalPanel().addKeyListener(keyAdapter);
+
     }
 }

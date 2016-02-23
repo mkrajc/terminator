@@ -38,7 +38,6 @@ public class TerminalBuffer implements ITerminal {
 
 	public TerminalCharacter[][] getBuffer() {
 		synchronized (mutex) {
-			// System.out.println("locking");
 			mutex.isLocked = true;
 			return ready;
 		}
@@ -48,9 +47,7 @@ public class TerminalBuffer implements ITerminal {
 		synchronized (mutex) {
 			if (mutex.isLocked) {
 				reset(progress);
-				// System.out.println("reseting in progress");
 			} else {
-				// System.out.println("swapping ... ");
 				final TerminalCharacter[][] swap = progress;
 				reset(ready);
 				progress = ready;
@@ -61,7 +58,6 @@ public class TerminalBuffer implements ITerminal {
 
 	public void release() {
 		synchronized (mutex) {
-			// System.out.println("releasing");
 			mutex.isLocked = false;
 		}
 	}
@@ -119,7 +115,6 @@ public class TerminalBuffer implements ITerminal {
 
 	private TerminalCharacter getChar(final int line, final int col) {
 		if (line >= ready.length || col >= ready[0].length) {
-			System.out.println("TODO fix by better thread sync");
 			return null;
 		}
 		return ready[line][col];

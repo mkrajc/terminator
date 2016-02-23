@@ -28,15 +28,17 @@ public class PrintLine extends CommandWrapper {
 
     @Override
     public void flush() throws IOException {
-
-        int lineIndex = getPosition().y;
-        String[] lines = sb.toString().split("\n");
-        for (String s : lines) {
-            for (int col = 0; col < s.length(); col++) {
-                char c = s.charAt(col);
-                getTerminal().put(c, lineIndex, col);
+        for (int i = 0; i < sb.length(); i++) {
+            int lineIndex = getPosition().y;
+            char c = sb.charAt(i);
+            if (c == '\n' || c == '\r') {
+                moveNextLine();
+            } else {
+                getTerminal().put(c, lineIndex, getPosition().x);
+                moveNextColumn();
             }
-            lineIndex++;
         }
+        sb.setLength(0);
     }
+
 }
