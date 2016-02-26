@@ -1,8 +1,12 @@
 package org.mech.terminator;
 
 import java.awt.Color;
+import java.io.Serializable;
 
-public class TerminalCharacter {
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+public class TerminalCharacter implements Serializable {
     private char ch;
     private Color fg, bg;
     private boolean bold;
@@ -42,6 +46,7 @@ public class TerminalCharacter {
         return fg;
     }
 
+
     public void reset(char c) {
         fg = null;
         bg = null;
@@ -56,4 +61,31 @@ public class TerminalCharacter {
     public boolean isBold() {
         return bold;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TerminalCharacter that = (TerminalCharacter) o;
+
+        return new EqualsBuilder()
+                .append(ch, that.ch)
+                .append(bold, that.bold)
+                .append(fg, that.fg)
+                .append(bg, that.bg)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(ch)
+                .append(fg)
+                .append(bg)
+                .append(bold)
+                .toHashCode();
+    }
+
 }

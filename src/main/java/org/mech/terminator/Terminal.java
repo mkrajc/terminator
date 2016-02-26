@@ -8,6 +8,7 @@ public class Terminal extends TerminalWrapper {
     }
 
     public static void setInstance(final Terminal terminal) {
+        System.out.println();
         INSTANCE = terminal;
     }
 
@@ -19,13 +20,12 @@ public class Terminal extends TerminalWrapper {
         setTerminal(new TerminalBuffer(size));
     }
 
-    public TerminalCharacter[][] retrieveLock() {
-        final TerminalCharacter[][] buffer = getBuffer().getBuffer();
-        return buffer;
+    public void copy(TerminalCharacter[][] buffer) {
+        getBuffer().copy(buffer);
     }
 
-    public void releaseLock() {
-        getBuffer().release();
+    public TerminalCharacter[][] newBuffer() {
+        return getBuffer().newBuffer();
     }
 
     protected TerminalBuffer getBuffer() {
