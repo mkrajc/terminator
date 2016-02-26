@@ -21,6 +21,7 @@ public class TerminalPanel extends JPanel implements ComponentListener {
     private static final long serialVersionUID = 1L;
 
     private boolean squareTerminal = false;
+    private TerminalCharacter[][] buffer;
 
     public TerminalPanel(TerminalSize size) {
         this(new Terminal(size));
@@ -40,11 +41,11 @@ public class TerminalPanel extends JPanel implements ComponentListener {
         addComponentListener(this);
     }
 
-    private int getCharWidth() {
+    protected int getCharWidth() {
         return squareTerminal ? getCharHeight() : getGraphics().getFontMetrics(TerminalAppearance.DEFAULT_NORMAL_FONT).charWidth(' ');
     }
 
-    private int getCharHeight() {
+    protected int getCharHeight() {
         final FontMetrics fontMetrics = getGraphics().getFontMetrics(TerminalAppearance.DEFAULT_NORMAL_FONT);
         return fontMetrics.getHeight();
 
@@ -63,48 +64,48 @@ public class TerminalPanel extends JPanel implements ComponentListener {
             final int charWidth = getCharWidth();
             final int charHeight = getCharHeight();
 
-            try {
-                final TerminalCharacter[][] data = getTerminal().retrieveLock();
-                for (int line = 0; line < getLines(); line++) {
-                    for (int col = 0; col < getColumns(); col++) {
-                        final TerminalCharacter character = data[line][col];
-                        boolean needToResetFont = false;
+            getTerminal().copy(buffer);
 
-                        final int charStartX = col * charWidth;
+            for (int line = 0; line < getLines(); line++) {
+                for (int col = 0; col < getColumns(); col++) {
 
+                    final TerminalCharacter character = buffer[line][col];
+
+                    boolean needToResetFont = false;
+
+                    final int charStartX = col * charWidth;
+
+                    graphics2D.setColor(TerminalAppearance.DEFAULT_FG_COLOR);
+
+                    if (character.getBg() != null) {
+                        graphics2D.setColor(character.getBg());
+                        graphics2D.fillRect(charStartX, line * charHeight, charWidth, charHeight);
                         graphics2D.setColor(TerminalAppearance.DEFAULT_FG_COLOR);
+                    }
 
-                        if (character.getBg() != null) {
-                            graphics2D.setColor(character.getBg());
-                            graphics2D.fillRect(charStartX, line * charHeight, charWidth, charHeight);
-                            graphics2D.setColor(TerminalAppearance.DEFAULT_FG_COLOR);
-                        }
+                    if (character.getFg() != null) {
+                        graphics2D.setColor(character.getFg());
+                    }
 
-                        if (character.getFg() != null) {
-                            graphics2D.setColor(character.getFg());
-                        }
+                    if (character.isBold()) {
+                        graphics2D.setFont(TerminalAppearance.DEFAULT_BOLD_FONT);
+                        needToResetFont = true;
+                    }
 
-                        if (character.isBold()) {
-                            graphics2D.setFont(TerminalAppearance.DEFAULT_BOLD_FONT);
-                            needToResetFont = true;
-                        }
+                    final FontMetrics fontMetrics = getGraphics().getFontMetrics(TerminalAppearance.DEFAULT_NORMAL_FONT);
+                    final int startY = ((line + 1) * charHeight) - fontMetrics.getDescent();
+                    final int startX = charStartX + ((charWidth - fontMetrics.charWidth(character.get())) / 2);
+                    graphics2D.drawString(character.toString(), startX, startY);
 
-                        final FontMetrics fontMetrics = getGraphics().getFontMetrics(TerminalAppearance.DEFAULT_NORMAL_FONT);
-                        final int startY = ((line + 1) * charHeight) - fontMetrics.getDescent();
-                        final int startX = charStartX + ((charWidth - fontMetrics.charWidth(character.get())) / 2);
-                        graphics2D.drawString(character.toString(), startX, startY);
-
-                        if (needToResetFont) {
-                            graphics2D.setFont(TerminalAppearance.DEFAULT_NORMAL_FONT);
-                        }
-
+                    if (needToResetFont) {
+                        graphics2D.setFont(TerminalAppearance.DEFAULT_NORMAL_FONT);
                     }
 
                 }
-                graphics2D.dispose();
-            } finally {
-                getTerminal().releaseLock();
+
             }
+            graphics2D.dispose();
+
         }
     }
 
@@ -155,18 +156,17 @@ public class TerminalPanel extends JPanel implements ComponentListener {
         System.out.println("componentShown");
     }
 
-    public boolean isSquareTerminal() {
-        return squareTerminal;
-    }
-
     protected void refreshTerminalSize() {
-        getTerminal().releaseLock();
-
         final Dimension size = getSize();
         final int w = (int) (size.getWidth() / getCharWidth());
         final int h = (int) (size.getHeight() / getCharHeight());
         final TerminalSize terminalSize = new TerminalSize(h, w);
         getTerminal().setSize(terminalSize);
+        buffer = getTerminal().newBuffer();
+    }
+
+    public boolean isSquareTerminal() {
+        return squareTerminal;
     }
 
     public void setSquareTerminal(final boolean squareTerminal) {

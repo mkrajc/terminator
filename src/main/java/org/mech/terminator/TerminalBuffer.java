@@ -2,6 +2,7 @@ package org.mech.terminator;
 
 import java.awt.Color;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.mech.terminator.geometry.Rectangle;
 
 public class TerminalBuffer implements ITerminal {
@@ -9,16 +10,20 @@ public class TerminalBuffer implements ITerminal {
     private static final char DEFAULT_CHAR = ' ';
 
     private final TerminalSize size;
-    private TerminalCharacter[][] ready, progress;
-    private final Mutex mutex = new Mutex();
+    private TerminalCharacter[][] write, read;
+    private boolean copied = false;
 
     public TerminalBuffer(final TerminalSize size) {
         this.size = size;
-        ready = new TerminalCharacter[size.getLines()][size.getColumns()];
-        progress = new TerminalCharacter[size.getLines()][size.getColumns()];
+        write = new TerminalCharacter[size.getLines()][size.getColumns()];
+        read = new TerminalCharacter[size.getLines()][size.getColumns()];
 
-        init(ready);
-        init(progress);
+        init(write);
+        init(read);
+    }
+
+    TerminalCharacter[][] newBuffer() {
+        return new TerminalCharacter[size.getLines()][size.getColumns()];
     }
 
     private void init(final TerminalCharacter[][] termData) {
@@ -37,39 +42,36 @@ public class TerminalBuffer implements ITerminal {
         }
     }
 
-    public TerminalCharacter[][] getBuffer() {
-        synchronized (mutex) {
-            mutex.isLocked = true;
-            return ready;
-        }
-    }
-
-    public void swap() {
-        synchronized (mutex) {
-            if (mutex.isLocked) {
-                reset(progress);
-            } else {
-                final TerminalCharacter[][] swap = progress;
-                reset(ready);
-                progress = ready;
-                ready = swap;
+    void copy(TerminalCharacter[][] buffer) {
+        if (!copied) {
+            synchronized (this) {
+                if (read.length != buffer.length || (read.length > 0 && buffer.length > 0 && read[0].length != buffer[0].length)) {
+                    throw new IllegalArgumentException("Buffer is not same size as data");
+                }
+                for (int i = 0; i < read.length; i++) {
+                    for (int j = 0; j < read[0].length; j++) {
+                        buffer[i][j] = SerializationUtils.clone(read[i][j]);
+                    }
+                }
+                copied = true;
             }
         }
     }
 
-    public void release() {
-        synchronized (mutex) {
-            mutex.isLocked = false;
+    private void swap() {
+        synchronized (this) {
+            final TerminalCharacter[][] swap = write;
+            write = read;
+            read = swap;
+            reset(write);
+            copied = false;
         }
     }
+
 
     @Override
     public TerminalSize getSize() {
         return size;
-    }
-
-    private static class Mutex {
-        boolean isLocked = false;
     }
 
     @Override
@@ -114,11 +116,11 @@ public class TerminalBuffer implements ITerminal {
         }
     }
 
-    private TerminalCharacter getChar(final int line, final int col) {
-        if (line >= ready.length || col >= ready[0].length) {
+    TerminalCharacter getChar(final int line, final int col) {
+        if (line >= write.length || col >= write[0].length) {
             return null;
         }
-        return ready[line][col];
+        return write[line][col];
     }
 
     @Override
@@ -139,12 +141,13 @@ public class TerminalBuffer implements ITerminal {
         }
     }
 
-    public void initilize(final TerminalBuffer buffer) {
+
+    void initilize(final TerminalBuffer buffer) {
         final int maxLine = Math.min(size.getLines(), buffer.getSize().getLines());
         final int maxColumn = Math.min(size.getColumns(), buffer.getSize().getColumns());
         for (int i = 0; i < maxLine; i++) {
             for (int j = 0; j < maxColumn; j++) {
-                ready[i][j] = buffer.getChar(i, j);
+                read[i][j] = buffer.getChar(i, j);
             }
         }
     }
