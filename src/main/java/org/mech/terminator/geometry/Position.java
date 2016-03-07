@@ -83,11 +83,13 @@ public class Position implements Serializable, Comparable<Position> {
     public int compareTo(final Position p) {
         if (x < p.x) {
             return -1;
-        } else if (p.x > p.x) {
+        } else if (x > p.x) {
             return 1;
-        } else {
-            return 0;
-        }
+        } else if(y < p.y){
+            return -1;
+        } else if(y > p.y) {
+            return 1;
+        } else return 0;
     }
 
 }
